@@ -1,5 +1,7 @@
 package com.example.blackjack;
 
+import com.example.blackjack.view.ConsoleInput;
+import com.example.blackjack.view.ConsoleOutput;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BlackjackApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BlackjackApplication.class, args);
+        ConsoleInput input = new ConsoleInput();
+        ConsoleOutput output = new ConsoleOutput();
+
+        Game game = new Game(input, output);
+        game.run();
     }
 
 }
