@@ -37,6 +37,38 @@ public class Player {
         return cards;
     }
 
+    public int calculateScore() {
+        int sum = 0;
+        int aceCount = 0;
+
+        for (Card card : cards) {
+            switch (card.getType()){
+                case "J":
+                case "K":
+                case "Q":
+                    sum += 10;
+                    break;
+                case "A":
+                    aceCount++;
+                    sum += 1;
+                    break;
+                default:
+                    sum += Integer.parseInt(card.getType());
+            }
+        }
+
+        while (aceCount > 0 && sum + 10 <= 21) {
+            sum += 10;
+            aceCount--;
+        }
+
+        return sum;
+    }
+
+    public boolean isBust() {
+        return calculateScore() > 21;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
