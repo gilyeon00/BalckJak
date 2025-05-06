@@ -17,6 +17,18 @@ public class Dealer {
         this.money = money;
     }
 
+    public void winFrom(Player player) {
+        this.money = money.plus(player.getBetAmount()); // 딜러 수익 증가
+    }
+
+    public void loseTo(Player player) {
+        this.money =  money.minus(player.getBetAmount()); // 딜러 수익 감소
+    }
+
+    public Money getMoney() {
+        return money;
+    }
+
     public Card getFirstCardDescription(){
         if (cards.isEmpty()) throw new IllegalStateException("카드가 존재하지 않습니다.");
         return cards.get(0);

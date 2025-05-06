@@ -29,7 +29,26 @@ public class Game {
         try {
             askPlayersHitCard(players, deck);
         } catch (PlayerBustException e) {
+            // 추가 뽑기 중 21이 초과될 경우
+            Player bustedPlayer = e.getPlayer();
+            bustedPlayer.lose();
+            dealer.winFrom(bustedPlayer);
 
+            for (Player player : players) {
+                if (!player.equals(bustedPlayer)) {
+                    player.refund();
+                }
+            }
+        }
+        printProfitSummary(players, dealer);
+    }
+
+    private void printProfitSummary(List<Player> players, Dealer dealer) {
+        System.out.println("\n## 최종 수익");
+        System.out.println("딜러: " + dealer.getMoney());
+
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getMoney());
         }
     }
 
@@ -72,4 +91,7 @@ public class Game {
             }
         }
     }
+
+
+
 }

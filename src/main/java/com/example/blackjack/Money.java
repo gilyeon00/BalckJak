@@ -12,7 +12,8 @@ public class Money {
     }
 
     public Money minus(Money other) {
-        return new Money(this.amount - other.amount);
+        Money money = new Money(this.amount - other.amount);
+        return money;
     }
 
     public Money times(double rate) {
@@ -25,8 +26,6 @@ public class Money {
 
     @Override
     public String toString() {
-        return "Money{" +
-                "amount=" + amount +
-                '}';
+        return String.valueOf(amount);
     }
 }
