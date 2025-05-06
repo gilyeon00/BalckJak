@@ -42,4 +42,27 @@ public class ConsoleInput {
 
         return players;
     }
+
+    public void createBetting(List<Player> players) {
+        for (Player player : players) {
+            while (true) {
+                try {
+                    System.out.printf("%s의 배팅 금액은?%n", player.getName());
+                    String inputLine = scanner.nextLine();
+                    int amount = Integer.parseInt(inputLine.trim());
+
+                    if (amount < 0) {
+                        throw new IllegalArgumentException("배팅 금액은 음수가 될 수 없습니다.");
+                    }
+
+                    player.betMoney(new Money(amount));
+                    break;
+
+                } catch (NumberFormatException e) {
+                    System.out.println("숫자를 입력해주세요.");
+                }
+            }
+        }
+    }
+
 }

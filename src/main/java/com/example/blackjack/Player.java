@@ -21,6 +21,14 @@ public class Player {
         this.cards = new ArrayList<>();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void betMoney(Money money){
+        this.money = money;
+    }
+
     @Override
     public String toString() {
         return "Player{" +

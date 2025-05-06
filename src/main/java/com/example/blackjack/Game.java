@@ -16,7 +16,8 @@ public class Game {
     }
 
     public void run() {
-        List<Player> players = input.readPlayers();             // 이름 입력 받기
+        List<Player> players = input.readPlayers();
+        input.createBetting(players);
         System.out.println(players);
     }
 }

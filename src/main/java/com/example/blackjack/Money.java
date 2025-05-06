@@ -22,4 +22,11 @@ public class Money {
     public int getAmount() {
         return amount;
     }
+
+    @Override
+    public String toString() {
+        return "Money{" +
+                "amount=" + amount +
+                '}';
+    }
 }
