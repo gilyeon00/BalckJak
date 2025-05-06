@@ -1,5 +1,6 @@
 package com.example.blackjack;
 
+import com.example.blackjack.exception.PlayerBustException;
 import com.example.blackjack.view.ConsoleInput;
 import com.example.blackjack.view.ConsoleOutput;
 
@@ -25,7 +26,11 @@ public class Game {
         Deck deck = new Deck();
 
         initialCards(players, dealer, deck);
-        System.out.println(players);
+        try {
+            askPlayersHitCard(players, deck);
+        } catch (PlayerBustException e) {
+
+        }
     }
 
     private void initialCards(List<Player> players, Dealer dealer, Deck deck) {
@@ -47,5 +52,24 @@ public class Game {
         return players.stream()
                 .map(Player::getName)
                 .collect(Collectors.joining(", "));
+    }
+
+    private void askPlayersHitCard(List<Player> players, Deck deck) {
+        for (Player player : players) {
+            while (true) {
+                System.out.println(player.getName() + "카드: " + player.getCards());
+
+                if (player.isBust()) {
+                    System.out.println(player.getName() + "의 카드 총합이 21이 넘어 게임이 종료되었습니다.");
+                    throw new PlayerBustException(player);
+                }
+
+                if (!input.askDrawCard(player)) {
+                    break;
+                }
+
+                player.receiveCard(deck.drawCard());
+            }
+        }
     }
 }

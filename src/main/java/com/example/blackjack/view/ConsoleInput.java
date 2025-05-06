@@ -65,4 +65,19 @@ public class ConsoleInput {
         }
     }
 
+    public boolean askDrawCard(Player player) {
+        while (true) {
+            System.out.printf("%s는 한 장의 카드를 더 받겠습니까? (예는 y, 아니오는 n)%n", player.getName());
+            String inputLine = scanner.nextLine();
+
+            if (inputLine.equals("y")) {
+                return true;
+            } else if (inputLine.equals("n")) {
+                return false;
+            } else {
+                System.out.println("y 또는 n으로 입력해주세요.");
+            }
+        }
+    }
+
 }
