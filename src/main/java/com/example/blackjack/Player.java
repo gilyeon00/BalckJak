@@ -29,6 +29,14 @@ public class Player {
         this.money = money;
     }
 
+    public void receiveCard (Card card){
+        cards.add(card);
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
     @Override
     public String toString() {
         return "Player{" +

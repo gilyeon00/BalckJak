@@ -25,4 +25,9 @@ public class Card {
         this.type = type;
         this.pattern = pattern;
     }
+
+    @Override
+    public String toString() {
+        return type + pattern.getKoreanDescription();
+    }
 }
