@@ -28,10 +28,18 @@ class DeckTest {
     @Test
     @DisplayName("덱에서 카드를 1장 뽑으면 덱 크기는 1 줄어든다")
     public void drawCard(){
+        Deck deck = new Deck();
+        deck.drawCard();
+        assertEquals(51, deck.remainingCards());
     }
 
     @Test
     @DisplayName("덱에서 52장 카드를 모두 뽑으면 예외가 발생한다.")
     public void drawCardFromEmptyDeck(){
+        Deck deck = new Deck();
+        for (int i = 0; i < 52; i++) {
+            deck.drawCard();
+        }
+        assertThrows(IllegalStateException.class, deck::drawCard);
     }
 }

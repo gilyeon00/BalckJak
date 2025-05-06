@@ -42,4 +42,16 @@ public class Deck {
     public List<Card> getCards() {
         return cards;
     }
+
+    public Card drawCard() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("덱에 카드가 없습니다.");
+        }
+        return cards.remove(0);
+    }
+
+    public int remainingCards() {
+        return cards.size();
+    }
+
 }
