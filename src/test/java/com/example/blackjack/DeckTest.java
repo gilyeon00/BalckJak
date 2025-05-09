@@ -35,7 +35,7 @@ class DeckTest {
 
     @Test
     @DisplayName("덱에서 52장 카드를 모두 뽑으면 예외가 발생한다.")
-    public void drawCardFromEmptyDeck(){
+    public void drawCard_fromEmptyDeck(){
         Deck deck = new Deck();
         for (int i = 0; i < 52; i++) {
             deck.drawCard();

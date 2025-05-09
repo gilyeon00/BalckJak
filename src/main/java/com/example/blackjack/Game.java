@@ -26,6 +26,8 @@ public class Game {
         Deck deck = new Deck();
 
         initialCards(players, dealer, deck);
+        // 블랙잭 여부 판단
+
         try {
             askPlayersHitCard(players, deck);
         } catch (PlayerBustException e) {
