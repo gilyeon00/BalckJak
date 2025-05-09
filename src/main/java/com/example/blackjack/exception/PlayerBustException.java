@@ -1,6 +1,6 @@
 package com.example.blackjack.exception;
 
-import com.example.blackjack.Player;
+import com.example.blackjack.domain.gamer.Player;
 
 public class PlayerBustException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.example.blackjack;
+package com.example.blackjack.domain;
 
 public class Money {
     private final int amount;

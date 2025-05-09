@@ -1,4 +1,4 @@
-package com.example.blackjack;
+package com.example.blackjack.domain;
 
 import com.example.blackjack.card.Card;
 import org.junit.jupiter.api.DisplayName;

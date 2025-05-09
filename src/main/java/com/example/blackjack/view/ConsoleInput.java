@@ -1,7 +1,7 @@
 package com.example.blackjack.view;
 
-import com.example.blackjack.Money;
-import com.example.blackjack.Player;
+import com.example.blackjack.domain.Money;
+import com.example.blackjack.domain.gamer.Player;
 
 import java.util.*;
 

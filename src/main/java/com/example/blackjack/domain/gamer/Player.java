@@ -1,6 +1,6 @@
-package com.example.blackjack;
+package com.example.blackjack.domain.gamer;
 
-import com.example.blackjack.domain.gamer.Gamer;
+import com.example.blackjack.domain.Money;
 
 import java.util.ArrayList;
 

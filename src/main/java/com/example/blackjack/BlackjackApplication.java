@@ -1,5 +1,6 @@
 package com.example.blackjack;
 
+import com.example.blackjack.domain.Game;
 import com.example.blackjack.view.ConsoleInput;
 import com.example.blackjack.view.ConsoleOutput;
 
