@@ -35,7 +35,6 @@ public class Game {
         } catch (PlayerBustException e) {
             // 추가 뽑기 중 21이 초과될 경우
             Player bustedPlayer = e.getPlayer();
-            bustedPlayer.lose();
             dealer.winFrom(bustedPlayer);
 
             for (Player player : players) {
@@ -65,7 +64,7 @@ public class Game {
         }
 
         System.out.println("딜러와 " + getPlayerNames(players) + "에게 2장의 카드를 나누었습니다.\n");
-        System.out.println("딜러: " + dealer.getFirstCardDescription());  // 첫번째 카드만 공개
+        System.out.println("딜러: " + dealer.getFirstCard());  // 첫번째 카드만 공개
         for (Player player : players) {
             System.out.println(player.getName() + "카드: " + player.getCards());
         }

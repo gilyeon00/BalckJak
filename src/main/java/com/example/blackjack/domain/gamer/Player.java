@@ -24,23 +24,14 @@ public class Player extends Gamer {
         return name;
     }
 
-    public Money getBetAmount() {
-        return betAmount;
-    }
-
-
     public void betMoney(Money betAmount) {
         this.betAmount = betAmount;
     }
 
-    public void win() {
-        this.money = this.money.plus(betAmount);
+    @Override
+    public Money getBetAmount() {
+        return betAmount;
     }
-
-    public void lose() {
-        this.money = this.money.minus(betAmount);
-    }
-
 
 
     public void refund() {

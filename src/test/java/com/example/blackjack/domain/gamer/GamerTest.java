@@ -2,6 +2,7 @@ package com.example.blackjack.domain.gamer;
 
 import com.example.blackjack.card.Card;
 import com.example.blackjack.card.Pattern;
+import com.example.blackjack.domain.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,12 @@ class GamerTest {
 
     @BeforeEach
     void setUp() {
-        gamer = new Gamer() {};
+        gamer = new Gamer() {
+            @Override
+            public Money getBetAmount() {
+                return gamer.getBetAmount();
+            }
+        };
     }
 
     @Test

@@ -55,4 +55,10 @@ public abstract class Gamer {
     public boolean isBust() {
         return calculateScore() > 21;
     }
+
+    public void winFrom(Gamer gamer) {
+        this.money = this.money.plus(gamer.getBetAmount());
+    }
+
+    public abstract Money getBetAmount();
 }
