@@ -60,11 +60,12 @@ public class Game {
             dealer.receiveCard(deck.drawCard());
         }
 
-        System.out.println("딜러와 " + getPlayerNames(players) + "에게 2장의 카드를 나누었습니다.");
+        System.out.println("딜러와 " + getPlayerNames(players) + "에게 2장의 카드를 나누었습니다.\n");
         System.out.println("딜러: " + dealer.getFirstCardDescription());  // 첫번째 카드만 공개
         for (Player player : players) {
             System.out.println(player.getName() + "카드: " + player.getCards());
         }
+        System.out.println("\n");
     }
 
     private String getPlayerNames(List<Player> players) {
@@ -76,8 +77,6 @@ public class Game {
     private void askPlayersHitCard(List<Player> players, Deck deck) {
         for (Player player : players) {
             while (true) {
-                System.out.println(player.getName() + "카드: " + player.getCards());
-
                 if (player.isBust()) {
                     System.out.println(player.getName() + "의 카드 총합이 21이 넘어 게임이 종료되었습니다.");
                     throw new PlayerBustException(player);
@@ -88,6 +87,7 @@ public class Game {
                 }
 
                 player.receiveCard(deck.drawCard());
+                System.out.println(player.getName() + "카드: " + player.getCards());
             }
         }
     }
