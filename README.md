@@ -113,4 +113,96 @@
 - 게이머 (플레이어, 딜러로 나눌 수 있음)
 - 룰 (Ace 1,11 결정, 블랙잭 판별, 승패 판정의 주체)
 
-플레이어와 딜러는 초기 받는 카드가 동일하며, 21이 되면 블랙잭이 된다는 점이 동일하여 ‘게이머’로 추상하여 생각하였습니다. 하지만 각각에게 적용하는 세부적인 룰은 상이합니다. 그래서 우선은 ‘게이머’ 라는 추상 객체보다 플레이어/딜러로 나누어서 구현한뒤 추상화의 필요성이 느껴질 경우 추상화하는 방향을 택했습니다.
+
+# 고려한 사항
+
+## 버스트 처리 흐름과 예외 설계
+
+### 목표
+
+플레이어나 딜러가 버스트(21 초과) 되었을 때 해당 게이머만 즉시 패배 처리하고, 다른 게이머들과 계속 진행될 수 있도록 설계하는 것이 목표입니다.
+
+### ❌ 초기 접근 (잘못된 가정)
+
+처음에는 "플레이어 중 한 명이라도 버스트가 되면 게임이 즉시 종료된다"고 잘못 이해하여,
+
+버스트가 발생할 때마다 `GamerBustException`을 던지고 `Game.run()` 전체를 종료하는 방식으로 구현했습니다.
+
+```java
+java
+복사편집
+if (player.isBust()) {
+    throw new GamerBustException(player); // ❌ 전체 게임 종료
+}
+
+```
+
+### 문제 파악 및 개선 방향
+
+블랙잭 룰을 다시 확인한 결과,
+
+> **버스트된 게이머만 패배 처리**되고, 나머지 게임은 그대로 진행되어야 한다는 것을 알게 됐습니다
+>
+
+이에 따라 예외를 던지는 대신 플레이어의 생존 여부에 따라 분기 처리하는 방식으로 수정했습니다
+
+처음에는 플레이어중 한 명이라도 버스트 상태가 되면 즉시 게임 종료가 되는 줄 알았으나, 룰을 좀 더 확인해봤을 때 해당 플레이어만 즉시 패배이며, 다른 플레이어가 있을 경우 게임을 그대로 진행한다는 것을 알았습니다.
+
+이전에는 즉시 게임 종료를 시켰기 때문에 해당 플레이어만 패배시키는 구현 변경이 이뤄져야했습니다
+
+### 최종 설계 : **GamerBustException** + 플레이어 분기 처리
+
+- `GamerBustException`은 여전히 `Dealer`가 버스트될 때 사용되며,
+  “딜러가 버스트시 플레이어들은 카드 패에 상관없이 즉시 패한다” 는 룰을 준수합니다
+- 플레이어는 `partitionPlayersByBust()`에서 Bust 여에 따라 생존/패배로 분리합니다.
+
+### 예외 클래스
+
+```java
+public class GamerBustException extends RuntimeException {
+
+    private final Gamer gamer;
+
+    public GamerBustException(Gamer gamer) {
+        super(gamer.getName() + "의 카드 합이 21을 초과하여 게임이 종료됩니다.");
+        this.gamer = gamer;
+    }
+
+    public Gamer getGamer() {
+        return gamer;
+    }
+}
+
+```
+
+### 플레이어 입력 분기 처리
+
+```java
+private PlayerPartition partitionPlayersByBust(List<Player> players, Deck deck) {
+    List<Player> survived = new ArrayList<>();
+    List<Player> busted = new ArrayList<>();
+
+    for (Player player : players) {
+        while (true) {
+            if (player.isBust()) {
+                System.out.println(player.getName() + "의 카드 총합이 21을 초과하여 패배했습니다.");
+                busted.add(player);
+                break;
+            }
+
+            if (!input.askDrawCard(player)) {
+                break;
+            }
+
+            player.receiveCard(deck.drawCard());
+            System.out.println(player.getName() + "카드: " + player.getCards());
+        }
+
+        if (!player.isBust()) {
+            survived.add(player);
+        }
+    }
+
+    return new PlayerPartition(survived, busted);
+}
+```

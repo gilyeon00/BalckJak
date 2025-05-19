@@ -3,10 +3,12 @@ package com.example.blackjack.domain;
 import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Gamer;
 import com.example.blackjack.domain.gamer.Player;
+import com.example.blackjack.domain.gamer.PlayerPartition;
 import com.example.blackjack.exception.GamerBustException;
 import com.example.blackjack.view.ConsoleInput;
 import com.example.blackjack.view.ConsoleOutput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,23 +42,25 @@ public class Game {
         }
 
         try {
-            // Play 카드 Hit 여부 판단
-            askPlayersHitCard(players, deck);
+            // Player 카드 Hit 여부 판단
+            PlayerPartition result = partitionPlayersByBust(players, deck);
+            List<Player> survivedPlayers = result.survived();
+            List<Player> bustPlayers = result.busted();
 
             // Dealer 추가 카드
             dealer.drawMoreCard(deck);
 
             // 승패 산정
-            resolveResult(dealer, players);
+            resolveResult(dealer, survivedPlayers, bustPlayers);
         } catch (GamerBustException e) {
             // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
             Gamer bustedGamer = e.getGamer();
-            if (bustedGamer instanceof Player) {
-                dealer.winFrom(bustedGamer);
-            } else if (bustedGamer instanceof Dealer) {
+            if (bustedGamer instanceof Dealer) {
                 for (Player player : players) {
                     player.refund();
                 }
+            } else {
+                System.out.println("게임이 비정상으로 종료되었습니다. 확인이 필요합니다");
             }
         }
 
@@ -119,12 +123,16 @@ public class Game {
                 .collect(Collectors.joining(", "));
     }
 
-    private void askPlayersHitCard(List<Player> players, Deck deck) {
+    private PlayerPartition partitionPlayersByBust(List<Player> players, Deck deck) {
+        List<Player> survived = new ArrayList<>();
+        List<Player> busted = new ArrayList<>();
+
         for (Player player : players) {
             while (true) {
                 if (player.isBust()) {
-                    System.out.println(player.getName() + "의 카드 총합이 21이 넘어 게임이 종료되었습니다.");
-                    throw new GamerBustException(player);
+                    System.out.println(player.getName() + "의 카드 총합이 21을 초과하여 패배했습니다.");
+                    busted.add(player);
+                    break;
                 }
 
                 if (!input.askDrawCard(player)) {
@@ -134,20 +142,26 @@ public class Game {
                 player.receiveCard(deck.drawCard());
                 System.out.println(player.getName() + "카드: " + player.getCards());
             }
+
+            if (!player.isBust()) {
+                survived.add(player);
+            }
         }
+
+        return new PlayerPartition(survived, busted);
     }
 
 
-    private void resolveResult(Dealer dealer, List<Player> players) {
-        for (Player player : players) {
-            if (player.isBust()) {
-                dealer.winFrom(player);
-                player.loseFrom(dealer);
-                continue;
-            }
+    private void resolveResult(Dealer dealer, List<Player> survivedPlayers, List<Player> bustPlayers) {
+        for (Player bustPlayer : bustPlayers) {
+            dealer.winFrom(bustPlayer);
+            bustPlayer.loseFrom(dealer);
+        }
 
+        for (Player player : survivedPlayers) {
             if (dealer.isBust()) {
                 player.winFrom(dealer);
+                dealer.loseFrom(player);
                 continue;
             }
 
@@ -156,6 +170,7 @@ public class Game {
 
             if (playerScore > dealerScore) {
                 player.winFrom(dealer);
+                dealer.loseFrom(player);
             } else if (playerScore < dealerScore) {
                 dealer.winFrom(player);
                 player.loseFrom(dealer);
@@ -164,4 +179,5 @@ public class Game {
             }
         }
     }
+
 }
