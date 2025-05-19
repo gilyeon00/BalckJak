@@ -3,7 +3,7 @@ package com.example.blackjack.domain;
 import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Gamer;
 import com.example.blackjack.domain.gamer.Player;
-import com.example.blackjack.domain.gamer.PlayerPartition;
+import com.example.blackjack.dto.PlayerPartition;
 import com.example.blackjack.exception.GamerBustException;
 import com.example.blackjack.view.ConsoleInput;
 import com.example.blackjack.view.ConsoleOutput;

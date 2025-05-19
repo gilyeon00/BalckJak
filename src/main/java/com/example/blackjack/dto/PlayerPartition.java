@@ -1,4 +1,6 @@
-package com.example.blackjack.domain.gamer;
+package com.example.blackjack.dto;
+
+import com.example.blackjack.domain.gamer.Player;
 
 import java.util.List;
 

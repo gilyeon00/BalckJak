@@ -2,7 +2,7 @@ package com.example.blackjack.domain;
 
 import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Player;
-import com.example.blackjack.domain.gamer.PlayerPartition;
+import com.example.blackjack.dto.PlayerPartition;
 
 import java.util.List;
 
