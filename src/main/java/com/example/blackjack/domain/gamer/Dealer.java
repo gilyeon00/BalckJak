@@ -16,6 +16,11 @@ public class Dealer extends Gamer {
     }
 
     @Override
+    public void winFrom(Gamer opponent) {
+        this.money = this.money.plus(opponent.getBetAmount());
+    }
+
+    @Override
     public Money getBetAmount() {
         return new Money(0); // 딜러는 베팅하지 않음
     }

@@ -17,6 +17,11 @@ class GamerTest {
     void setUp() {
         gamer = new Gamer() {
             @Override
+            public void winFrom(Gamer gamer) {
+
+            }
+
+            @Override
             public Money getBetAmount() {
                 return gamer.getBetAmount();
             }

@@ -8,9 +8,14 @@ import java.util.List;
 
 public abstract class Gamer {
 
+    protected String name;
     protected List<Card> cards = new ArrayList<>();
     protected Money money = new Money(0);
 
+
+    public String getName() {
+        return name;
+    }
 
     public void receiveCard(Card card) {
         cards.add(card);
@@ -56,9 +61,25 @@ public abstract class Gamer {
         return calculateScore() > 21;
     }
 
-    public void winFrom(Gamer gamer) {
-        this.money = this.money.plus(gamer.getBetAmount());
+    public abstract void winFrom(Gamer gamer);
+    public void loseFrom(Gamer gamer) {
+        if (gamer instanceof Player) {
+            Player player = (Player) gamer;
+
+            int penalty = player.isBlackJack()
+                    ? (int) (player.getBetAmount().getAmount() * 1.5)
+                    : player.getBetAmount().getAmount();
+
+            this.money = this.money.minus(new Money(penalty));
+        } else if (gamer instanceof Dealer) {
+            this.money = this.money.minus(getBetAmount());
+        }
+    }
+
+    public boolean isBlackJack() {
+        return cards.size() == 2 && calculateScore() == 21;
     }
 
     public abstract Money getBetAmount();
+
 }

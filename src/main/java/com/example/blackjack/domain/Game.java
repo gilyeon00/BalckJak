@@ -2,7 +2,7 @@ package com.example.blackjack.domain;
 
 import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Player;
-import com.example.blackjack.exception.PlayerBustException;
+import com.example.blackjack.exception.GamerBustException;
 import com.example.blackjack.view.ConsoleInput;
 import com.example.blackjack.view.ConsoleOutput;
 
@@ -27,13 +27,28 @@ public class Game {
         Dealer dealer = new Dealer();
         Deck deck = new Deck();
 
+        // 카드 분배
         initialCards(players, dealer, deck);
-        // 블랙잭 여부 판단
+
+        // 블랙잭 판별
+        boolean isAnyBlackJack = checkBlackJack(dealer, players);
+        if (isAnyBlackJack) {
+            output.printFinalCards(dealer, players);
+            output.printProfitSummary(players, dealer);
+            return;
+        }
 
         try {
             askPlayersHitCard(players, deck);
-        } catch (PlayerBustException e) {
-            // 추가 뽑기 중 21이 초과될 경우
+            while (dealer.calculateScore() <= 16) {
+                dealer.receiveCard(deck.drawCard());
+                System.out.println("딜러가 카드 한 장을 뽑았습니다");
+                if(dealer.isBust()){
+                    throw new GamerBustException(dealer);
+                }
+            }
+        } catch (GamerBustException e) {
+            // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
             Player bustedPlayer = e.getPlayer();
             dealer.winFrom(bustedPlayer);
 
@@ -43,16 +58,42 @@ public class Game {
                 }
             }
         }
-        printProfitSummary(players, dealer);
+
+        output.printFinalCards(dealer, players);
+        output.printProfitSummary(players, dealer);
     }
 
-    private void printProfitSummary(List<Player> players, Dealer dealer) {
-        System.out.println("\n## 최종 수익");
-        System.out.println("딜러: " + dealer.getMoney());
+    private boolean checkBlackJack(Dealer dealer, List<Player> players) {
+        boolean isAnyBlackJack = false;
+        // TODO:: 플레이어 2명이상이 블랙잭인 경우
 
-        for (Player player : players) {
-            System.out.println(player.getName() + ": " + player.getMoney());
+        if (dealer.isBlackJack()) {
+            isAnyBlackJack = true;
+            for (Player player : players) {
+                if (player.isBlackJack()) {
+                    player.refund();
+                    System.out.println(player.getName() + "와 딜러 모두 블랙잭이므로 무승부로 게임을 종료합니다");
+                    return isAnyBlackJack;
+                } else {
+                    player.loseFrom(dealer);
+                    dealer.winFrom(player);
+                    System.out.println("딜러가 블랙잭이므로 딜러가 승리했습니다");
+                }
+            }
+        } else {
+            for (Player player : players) {
+                if (player.isBlackJack()) {
+                    isAnyBlackJack = true;
+                    player.winFrom(dealer);
+                    dealer.loseFrom(player);
+                    return isAnyBlackJack;
+                } else {
+                    return isAnyBlackJack;
+                }
+            }
         }
+
+        return isAnyBlackJack;
     }
 
     private void initialCards(List<Player> players, Dealer dealer, Deck deck) {
@@ -82,7 +123,7 @@ public class Game {
             while (true) {
                 if (player.isBust()) {
                     System.out.println(player.getName() + "의 카드 총합이 21이 넘어 게임이 종료되었습니다.");
-                    throw new PlayerBustException(player);
+                    throw new GamerBustException(player);
                 }
 
                 if (!input.askDrawCard(player)) {
@@ -94,7 +135,6 @@ public class Game {
             }
         }
     }
-
 
 
 }

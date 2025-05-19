@@ -9,8 +9,6 @@ import java.util.ArrayList;
  * 게임 시작 시 초기 자산은 0원이며, 베팅은 음수(대출 개념)를 허용한다.
  */
 public class Player extends Gamer {
-
-    private final String name;
     private Money betAmount;
 
     public Player(String name) {
@@ -20,12 +18,14 @@ public class Player extends Gamer {
         this.cards = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void betMoney(Money betAmount) {
         this.betAmount = betAmount;
+    }
+
+    public void refund() {
+        this.money.plus(betAmount);
+        this.betAmount.minus(betAmount);
+        System.out.println(name + "은 베팅 금액을 돌려받습니다.");
     }
 
     @Override
@@ -33,11 +33,15 @@ public class Player extends Gamer {
         return betAmount;
     }
 
-
-    public void refund() {
-        this.money.plus(betAmount);
-        this.betAmount.minus(betAmount);
-        System.out.println(name + "은 베팅 금액을 돌려받습니다.");
+    @Override
+    public void winFrom(Gamer gamer) {
+        if (this.isBlackJack() && !gamer.isBlackJack()) {
+            // 블랙잭으로 이긴 경우
+            int bonus = (int) (betAmount.getAmount() * 1.5);
+            this.money = this.money.plus(new Money(bonus));
+        } else {
+            this.money = this.money.plus(betAmount);
+        }
     }
 
     @Override
