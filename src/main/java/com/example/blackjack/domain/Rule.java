@@ -1,6 +1,7 @@
 package com.example.blackjack.domain;
 
 import com.example.blackjack.domain.gamer.Dealer;
+import com.example.blackjack.domain.gamer.Gamer;
 import com.example.blackjack.domain.gamer.Player;
 import com.example.blackjack.dto.PlayerPartition;
 
@@ -56,6 +57,19 @@ public class Rule {
                     player.refund();
                 }
             }
+        }
+    }
+
+    public void handleBust(Gamer gamer, List<Player> players) {
+        if (gamer instanceof Dealer) {
+            System.out.println("딜러의 카드 합이 21을 넘어 모든 플레이어는 패에 상관없이 베팅금액을 돌려받습니다.");
+            for (Player player : players) {
+                player.refund();
+            }
+        } else if (gamer instanceof Player player) {
+            System.out.println(player.getName() + "의 카드 총합이 21을 초과하여 패배했습니다.");
+        } else {
+            System.out.println("알 수 없는 게이머 타입입니다. 확인이 필요합니다.");
         }
     }
 }

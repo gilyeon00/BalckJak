@@ -1,7 +1,6 @@
 package com.example.blackjack.domain;
 
 import com.example.blackjack.domain.gamer.Dealer;
-import com.example.blackjack.domain.gamer.Gamer;
 import com.example.blackjack.domain.gamer.Player;
 import com.example.blackjack.dto.PlayerPartition;
 import com.example.blackjack.exception.GamerBustException;
@@ -25,8 +24,7 @@ public class Game {
     }
 
     public void run() {
-        List<Player> players = input.readPlayers();
-        input.createBetting(players);
+        List<Player> players = init();
 
         Dealer dealer = new Dealer();
         Deck deck = new Deck();
@@ -36,8 +34,7 @@ public class Game {
 
         // 블랙잭 판별
         if (rule.hasAnyBlackjack(dealer, players)) {
-            output.printFinalCards(dealer, players);
-            output.printProfitSummary(players, dealer);
+            output.printFinishGame(dealer, players);
             return;
         }
 
@@ -45,27 +42,25 @@ public class Game {
         PlayerPartition result = partitionPlayersByBust(players, deck);
 
         try {
-            // Dealer 추가 카드
             dealer.drawMoreCard(deck);
         } catch (GamerBustException e) {
-            // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
-            Gamer bustedGamer = e.getGamer();
-            if (bustedGamer instanceof Dealer) {
-                System.out.println("딜러의 카드 합이 21을 넘어 모든 플레이어는 패에 상관없이 베팅금액을 돌려받습니다.");
-                for (Player player : players) {
-                    player.refund();
-                }
-            } else {
-                System.out.println("게임이 비정상으로 종료되었습니다. 확인이 필요합니다");
-            }
+            rule.handleBust(e.getGamer(), players);
+            output.printFinishGame(dealer, players);
+            return;
         }
 
         // 승패 산정
         rule.resolve(dealer, result);
 
-        output.printFinalCards(dealer, players);
-        output.printProfitSummary(players, dealer);
+        output.printFinishGame(dealer, players);
     }
+
+    private List<Player> init(){
+        List<Player> players = input.readPlayers();
+        input.createBetting(players);
+        return players;
+    }
+
 
     private void initialCards(List<Player> players, Dealer dealer, Deck deck) {
         deck.initialCards(players, dealer, INITIAL_CARD);

@@ -26,6 +26,11 @@ public class ConsoleOutput {
                 .collect(Collectors.joining(", "));
     }
 
+    public void printFinishGame(Dealer dealer, List<Player> players){
+        printFinalCards(dealer, players);
+        printProfitSummary(players, dealer);
+    }
+
     public void printFinalCards(Dealer dealer, List<Player> players) {
         System.out.println("\n");
 
