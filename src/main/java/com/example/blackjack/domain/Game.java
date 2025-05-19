@@ -42,17 +42,12 @@ public class Game {
             return;
         }
 
-        try {
-            // Player 카드 Hit 여부 판단
-            PlayerPartition result = partitionPlayersByBust(players, deck);
-            List<Player> survivedPlayers = result.survived();
-            List<Player> bustPlayers = result.busted();
+        // Player 카드 Hit 여부 판단
+        PlayerPartition result = partitionPlayersByBust(players, deck);
 
+        try {
             // Dealer 추가 카드
             dealer.drawMoreCard(deck);
-
-            // 승패 산정
-            resolveResult(dealer, survivedPlayers, bustPlayers);
         } catch (GamerBustException e) {
             // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
             Gamer bustedGamer = e.getGamer();
@@ -65,6 +60,9 @@ public class Game {
                 System.out.println("게임이 비정상으로 종료되었습니다. 확인이 필요합니다");
             }
         }
+
+        // 승패 산정
+        rule.resolve(dealer, result);
 
         output.printFinalCards(dealer, players);
         output.printProfitSummary(players, dealer);
