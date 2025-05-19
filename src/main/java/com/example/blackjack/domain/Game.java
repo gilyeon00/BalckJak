@@ -10,7 +10,6 @@ import com.example.blackjack.view.ConsoleOutput;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Game {
 
@@ -69,26 +68,10 @@ public class Game {
     }
 
     private void initialCards(List<Player> players, Dealer dealer, Deck deck) {
-        for (int i = 0; i < INITIAL_CARD; i++) {
-            for (Player player : players) {
-                player.receiveCard(deck.drawCard());
-            }
-            dealer.receiveCard(deck.drawCard());
-        }
-
-        System.out.println("딜러와 " + getPlayerNames(players) + "에게 2장의 카드를 나누었습니다.\n");
-        System.out.println("딜러: " + dealer.getFirstCard());  // 첫번째 카드만 공개
-        for (Player player : players) {
-            System.out.println(player.getName() + "카드: " + player.getCards());
-        }
-        System.out.println("\n");
+        deck.initialCards(players, dealer, INITIAL_CARD);
+        output.printInitialCardStatus(players, dealer);
     }
 
-    private String getPlayerNames(List<Player> players) {
-        return players.stream()
-                .map(Player::getName)
-                .collect(Collectors.joining(", "));
-    }
 
     private PlayerPartition partitionPlayersByBust(List<Player> players, Deck deck) {
         List<Player> survived = new ArrayList<>();
@@ -116,35 +99,6 @@ public class Game {
         }
 
         return new PlayerPartition(survived, busted);
-    }
-
-
-    private void resolveResult(Dealer dealer, List<Player> survivedPlayers, List<Player> bustPlayers) {
-        for (Player bustPlayer : bustPlayers) {
-            dealer.winFrom(bustPlayer);
-            bustPlayer.loseFrom(dealer);
-        }
-
-        for (Player player : survivedPlayers) {
-            if (dealer.isBust()) {
-                player.winFrom(dealer);
-                dealer.loseFrom(player);
-                continue;
-            }
-
-            int playerScore = player.calculateScore();
-            int dealerScore = dealer.calculateScore();
-
-            if (playerScore > dealerScore) {
-                player.winFrom(dealer);
-                dealer.loseFrom(player);
-            } else if (playerScore < dealerScore) {
-                dealer.winFrom(player);
-                player.loseFrom(dealer);
-            } else {
-                player.refund(); // 무승부
-            }
-        }
     }
 
 }

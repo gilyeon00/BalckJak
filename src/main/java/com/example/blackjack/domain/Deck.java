@@ -2,6 +2,8 @@ package com.example.blackjack.domain;
 
 import com.example.blackjack.card.Card;
 import com.example.blackjack.card.Pattern;
+import com.example.blackjack.domain.gamer.Dealer;
+import com.example.blackjack.domain.gamer.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,4 +56,12 @@ public class Deck {
         return cards.size();
     }
 
+    public void initialCards(List<Player> players, Dealer dealer, int INITIAL_CARD) {
+        for (int i = 0; i < INITIAL_CARD; i++) {
+            for (Player player : players) {
+                player.receiveCard(drawCard());
+            }
+            dealer.receiveCard(drawCard());
+        }
+    }
 }
