@@ -40,13 +40,9 @@ public class Game {
 
         try {
             askPlayersHitCard(players, deck);
-            while (dealer.calculateScore() <= 16) {
-                dealer.receiveCard(deck.drawCard());
-                System.out.println("딜러가 카드 한 장을 뽑았습니다");
-                if(dealer.isBust()){
-                    throw new GamerBustException(dealer);
-                }
-            }
+            dealer.drawMoreCard(deck);
+
+            // 승패 산정
         } catch (GamerBustException e) {
             // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
             Player bustedPlayer = e.getPlayer();

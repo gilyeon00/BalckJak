@@ -1,7 +1,9 @@
 package com.example.blackjack.domain.gamer;
 
+import com.example.blackjack.domain.Deck;
 import com.example.blackjack.domain.Money;
 import com.example.blackjack.card.Card;
+import com.example.blackjack.exception.GamerBustException;
 
 import java.util.ArrayList;
 
@@ -29,6 +31,16 @@ public class Dealer extends Gamer {
     public Card getFirstCard() {
         if (cards.isEmpty()) throw new IllegalStateException("카드가 존재하지 않습니다.");
         return cards.get(0);
+    }
+
+    public void drawMoreCard(Deck deck){
+        while (calculateScore() <= 16) {
+            receiveCard(deck.drawCard());
+            System.out.println("딜러가 카드 한 장을 뽑았습니다");
+            if(isBust()){
+                throw new GamerBustException(this);
+            }
+        }
     }
 
     public Dealer() {
