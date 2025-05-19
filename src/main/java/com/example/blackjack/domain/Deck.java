@@ -1,7 +1,7 @@
 package com.example.blackjack.domain;
 
-import com.example.blackjack.card.Card;
-import com.example.blackjack.card.Pattern;
+import com.example.blackjack.domain.card.Card;
+import com.example.blackjack.domain.card.Pattern;
 import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Player;
 

@@ -1,4 +1,4 @@
-package com.example.blackjack.card;
+package com.example.blackjack.domain.card;
 
 public enum Pattern {
     HEART("하트")
