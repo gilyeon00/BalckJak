@@ -209,7 +209,7 @@ private PlayerPartition partitionPlayersByBust(List<Player> players, Deck deck) 
 
 
 # 테스트 결과
-![Image](https://github.com/user-attachments/assets/26a3c551-caca-48e6-bde3-9840b4626f28)
+![Image](https://github.com/user-attachments/assets/08e61f1d-0926-48c0-852f-595cc0b42737)
 
 # 실행 결과
 
