@@ -12,9 +12,9 @@ public class Money {
     }
 
     public Money minus(Money other) {
-        Money money = new Money(this.amount - other.amount);
-        return money;
+        return new Money(this.amount - other.amount);
     }
+
 
     public Money times(double rate) {
         return new Money((int) (this.amount * rate));

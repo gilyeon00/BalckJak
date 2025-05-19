@@ -35,12 +35,13 @@ public class Player extends Gamer {
 
     @Override
     public void winFrom(Gamer gamer) {
-        if (this.isBlackJack() && !gamer.isBlackJack()) {
-            // 블랙잭으로 이긴 경우
+        if (this.isBlackJack() && !gamer.isBlackJack()) { // 블랙잭으로 이긴 경우
             int bonus = (int) (betAmount.getAmount() * 1.5);
+            gamer.pay(this.money.plus(new Money(bonus)));
             this.money = this.money.plus(new Money(bonus));
         } else {
             this.money = this.money.plus(betAmount);
+            gamer.pay(betAmount);
         }
     }
 

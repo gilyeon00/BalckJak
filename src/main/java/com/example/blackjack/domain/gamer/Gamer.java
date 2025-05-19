@@ -29,6 +29,10 @@ public abstract class Gamer {
         return money;
     }
 
+    public void pay(Money amount) {
+        this.money = this.money.minus(amount);
+    }
+
     public int calculateScore() {
         int sum = 0;
         int aceCount = 0;
@@ -62,19 +66,6 @@ public abstract class Gamer {
     }
 
     public abstract void winFrom(Gamer gamer);
-    public void loseFrom(Gamer gamer) {
-        if (gamer instanceof Player) {
-            Player player = (Player) gamer;
-
-            int penalty = player.isBlackJack()
-                    ? (int) (player.getBetAmount().getAmount() * 1.5)
-                    : player.getBetAmount().getAmount();
-
-            this.money = this.money.minus(new Money(penalty));
-        } else if (gamer instanceof Dealer) {
-            this.money = this.money.minus(getBetAmount());
-        }
-    }
 
     public boolean isBlackJack() {
         return cards.size() == 2 && calculateScore() == 21;

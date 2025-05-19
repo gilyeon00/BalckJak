@@ -9,17 +9,10 @@ import java.util.ArrayList;
 
 public class Dealer extends Gamer {
 
-    public void receiveCard (Card card){
-        cards.add(card);
-    }
-
-    public Money getMoney() {
-        return money;
-    }
-
     @Override
-    public void winFrom(Gamer opponent) {
-        this.money = this.money.plus(opponent.getBetAmount());
+    public void winFrom(Gamer gamer) {
+        gamer.pay(gamer.getBetAmount());
+        this.money = this.money.plus(gamer.getBetAmount());
     }
 
     @Override
@@ -33,11 +26,11 @@ public class Dealer extends Gamer {
         return cards.get(0);
     }
 
-    public void drawMoreCard(Deck deck){
+    public void drawMoreCard(Deck deck) {
         while (calculateScore() <= 16) {
             receiveCard(deck.drawCard());
             System.out.println("딜러가 카드 한 장을 뽑았습니다");
-            if(isBust()){
+            if (isBust()) {
                 throw new GamerBustException(this);
             }
         }

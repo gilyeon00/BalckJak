@@ -115,6 +115,18 @@
 
 
 # 고려한 사항
+## Gamer 추상 클래스 설계
+
+`Player`와 `Dealer`는 모두 "카드를 가진 참가자"라는 공통 개념을 기반으로 하기 때문에,
+
+공통 필드와 행위를 담는 `Gamer` abstract class를 설계했습니다.
+
+이 클래스는 다음의 책임을 가집니다:
+
+- 이름, 카드 목록, 보유 금액 등의 공통 상태 보유
+- 카드 수령 및 점수 계산 (`receiveCard()`, `calculateScore()`)
+- 버스트 여부 판별 (`isBust()`)
+- 금액 지불 (`pay()`)
 
 ## 버스트 처리 흐름과 예외 설계
 
@@ -206,8 +218,75 @@ private PlayerPartition partitionPlayersByBust(List<Player> players, Deck deck) 
     return new PlayerPartition(survived, busted);
 }
 ```
+## 승패 판단 로직 객체지향적 리팩토링 적용
 
+### 리팩토링 목표
 
+- 승자만 자신의 입장에서 승리 처리를 하도록 하여 단일 책임 원칙(SRP)을 따름
+- 패자는 결과를 알지 못하고, 승자가 모든 처리를 위임받음
+- 객체 간 메시지를 주고받는 방식의 협력 관계로 전환
+
+### 배경
+
+기존의 `Rule.resolve()` 메서드는 Game의 흐름에 따라 승패를 직접 판단합니다
+이 방식은 로직이 분산되고 **승자와 패자의 책임이 중복**되어 코드 복잡도와 의존성이 증가하는 문제가 있었습니다.
+(휴먼 에러가 날 가능성또한 존재)
+
+```java
+for (Player busted : partition.busted()) {
+    dealer.winFrom(busted);
+    busted.loseFrom(dealer);
+}
+```
+
+### 리팩토링 후 구조
+
+- `winFrom(Gamer)` 메서드의 추상화
+
+승리 처리 로직은 `Player`와 `Dealer`가 전혀 다르기 때문에, `Gamer` 추상 클래스에는 `winFrom()`을 추상 메서드로 정의하여 구체 클래스에서 반드시 구현하도록 강제했습니다.
+
+```java
+public abstract void winFrom(Gamer gamer);
+```
+
+➡️ Rule의 resolve()는 오직 승자만 호출되도록 변경
+
+```java
+public void resolve(Dealer dealer, PlayerPartition partition) {
+    for (Player busted : partition.busted()) {
+        dealer.winFrom(busted); // 딜러가 승리
+    }
+
+    for (Player player : partition.survived()) {
+        if (dealer.isBust()) {
+            player.winFrom(dealer); // 딜러 버스트 → 플레이어 승리
+        } else {
+            int playerScore = player.calculateScore();
+            int dealerScore = dealer.calculateScore();
+
+            if (playerScore > dealerScore) {
+                player.winFrom(dealer); // 플레이어 승리
+            } else if (playerScore < dealerScore) {
+                dealer.winFrom(player); // 딜러 승리
+            } else {
+                player.refund(); // 무승부
+            }
+        }
+    }
+}
+
+```
+
+### 객체지향 설계 원칙 적용 및 효과
+
+- 다형성(polymorphism)을 활용하여 `Rule` 또는 `Game`에서는 `gamer.winFrom(gamer)`처럼 일관된 방식으로 호출 가능
+- 승자의 관점에서만 처리하도록 통일하여 코드 중복 제거 및 책임 명확
+- **SRP**: 승자만 금액 처리 책임을 가지며, 로직이 단일화됨
+- **Tell, Don’t Ask**: 승자가 패자의 상태를 묻지 않고 메시지를 보내도록 전환
+- **Liskov Substitution**: Gamer 타입을 기반으로 Player/Dealer 자유 교체 가능
+- 캡슐화: 금액 변화는 `Money`와 `pay()`를 통해 안전하게 관리 (Money 는 불변 객체)
+
+---
 # 테스트 결과
 ![Image](https://github.com/user-attachments/assets/08e61f1d-0926-48c0-852f-595cc0b42737)
 

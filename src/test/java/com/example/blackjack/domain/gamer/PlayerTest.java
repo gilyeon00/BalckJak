@@ -23,8 +23,7 @@ class PlayerTest {
         dealer.receiveCard(new Card("9", Pattern.CLUB));    // 19
 
         player.winFrom(dealer);
-        dealer.loseFrom(player);
-
+        
         assertEquals(1500, player.getMoney().getAmount());
         assertEquals(-1500, dealer.getMoney().getAmount());
     }
@@ -43,7 +42,6 @@ class PlayerTest {
         dealer.receiveCard(new Card("8", Pattern.DIAMOND));    // 18
 
         player.winFrom(dealer);
-        dealer.loseFrom(player);
 
         assertEquals(1000, player.getMoney().getAmount());
         assertEquals(-1000, dealer.getMoney().getAmount());
