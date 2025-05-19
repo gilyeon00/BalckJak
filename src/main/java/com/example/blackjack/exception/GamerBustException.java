@@ -1,8 +1,6 @@
 package com.example.blackjack.exception;
 
-import com.example.blackjack.domain.gamer.Dealer;
 import com.example.blackjack.domain.gamer.Gamer;
-import com.example.blackjack.domain.gamer.Player;
 
 public class GamerBustException extends RuntimeException {
 
@@ -13,12 +11,7 @@ public class GamerBustException extends RuntimeException {
         this.gamer = gamer;
     }
 
-    public Player getPlayer() {
-        return (Player)gamer;
+    public Gamer getGamer() {
+        return gamer;
     }
-
-    public Dealer getDealer() {
-        return (Dealer)gamer;
-    }
-
 }

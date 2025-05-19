@@ -1,6 +1,7 @@
 package com.example.blackjack.domain;
 
 import com.example.blackjack.domain.gamer.Dealer;
+import com.example.blackjack.domain.gamer.Gamer;
 import com.example.blackjack.domain.gamer.Player;
 import com.example.blackjack.exception.GamerBustException;
 import com.example.blackjack.view.ConsoleInput;
@@ -39,17 +40,21 @@ public class Game {
         }
 
         try {
+            // Play 카드 Hit 여부 판단
             askPlayersHitCard(players, deck);
+
+            // Dealer 추가 카드
             dealer.drawMoreCard(deck);
 
             // 승패 산정
+            resolveResult(dealer, players);
         } catch (GamerBustException e) {
             // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
-            Player bustedPlayer = e.getPlayer();
-            dealer.winFrom(bustedPlayer);
-
-            for (Player player : players) {
-                if (!player.equals(bustedPlayer)) {
+            Gamer bustedGamer = e.getGamer();
+            if (bustedGamer instanceof Player) {
+                dealer.winFrom(bustedGamer);
+            } else if (bustedGamer instanceof Dealer) {
+                for (Player player : players) {
                     player.refund();
                 }
             }
@@ -133,4 +138,30 @@ public class Game {
     }
 
 
+    private void resolveResult(Dealer dealer, List<Player> players) {
+        for (Player player : players) {
+            if (player.isBust()) {
+                dealer.winFrom(player);
+                player.loseFrom(dealer);
+                continue;
+            }
+
+            if (dealer.isBust()) {
+                player.winFrom(dealer);
+                continue;
+            }
+
+            int playerScore = player.calculateScore();
+            int dealerScore = dealer.calculateScore();
+
+            if (playerScore > dealerScore) {
+                player.winFrom(dealer);
+            } else if (playerScore < dealerScore) {
+                dealer.winFrom(player);
+                player.loseFrom(dealer);
+            } else {
+                player.refund(); // 무승부
+            }
+        }
+    }
 }
