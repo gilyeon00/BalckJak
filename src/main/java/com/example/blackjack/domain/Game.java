@@ -16,11 +16,13 @@ public class Game {
 
     private final ConsoleInput input;
     private final ConsoleOutput output;
+    private final Rule rule;
     private static final Integer INITIAL_CARD = 2;
 
-    public Game(ConsoleInput input, ConsoleOutput output) {
+    public Game(ConsoleInput input, ConsoleOutput output, Rule rule) {
         this.input = input;
         this.output = output;
+        this.rule = rule;
     }
 
     public void run() {
@@ -34,8 +36,7 @@ public class Game {
         initialCards(players, dealer, deck);
 
         // 블랙잭 판별
-        boolean isAnyBlackJack = checkBlackJack(dealer, players);
-        if (isAnyBlackJack) {
+        if (rule.hasAnyBlackjack(dealer, players)) {
             output.printFinalCards(dealer, players);
             output.printProfitSummary(players, dealer);
             return;
@@ -56,6 +57,7 @@ public class Game {
             // 추가 뽑기 중 21이 초과될 경우 (버스트 상태)
             Gamer bustedGamer = e.getGamer();
             if (bustedGamer instanceof Dealer) {
+                System.out.println("딜러의 카드 합이 21을 넘어 모든 플레이어는 패에 상관없이 베팅금액을 돌려받습니다.");
                 for (Player player : players) {
                     player.refund();
                 }
@@ -66,39 +68,6 @@ public class Game {
 
         output.printFinalCards(dealer, players);
         output.printProfitSummary(players, dealer);
-    }
-
-    private boolean checkBlackJack(Dealer dealer, List<Player> players) {
-        boolean isAnyBlackJack = false;
-        // TODO:: 플레이어 2명이상이 블랙잭인 경우
-
-        if (dealer.isBlackJack()) {
-            isAnyBlackJack = true;
-            for (Player player : players) {
-                if (player.isBlackJack()) {
-                    player.refund();
-                    System.out.println(player.getName() + "와 딜러 모두 블랙잭이므로 무승부로 게임을 종료합니다");
-                    return isAnyBlackJack;
-                } else {
-                    player.loseFrom(dealer);
-                    dealer.winFrom(player);
-                    System.out.println("딜러가 블랙잭이므로 딜러가 승리했습니다");
-                }
-            }
-        } else {
-            for (Player player : players) {
-                if (player.isBlackJack()) {
-                    isAnyBlackJack = true;
-                    player.winFrom(dealer);
-                    dealer.loseFrom(player);
-                    return isAnyBlackJack;
-                } else {
-                    return isAnyBlackJack;
-                }
-            }
-        }
-
-        return isAnyBlackJack;
     }
 
     private void initialCards(List<Player> players, Dealer dealer, Deck deck) {
